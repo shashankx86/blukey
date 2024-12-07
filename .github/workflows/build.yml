@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release 
 
 on:
   workflow_dispatch:
@@ -14,17 +14,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-          - aarch64-unknown-linux-gnu
-          - armv7-unknown-linux-gnueabihf
-          - i686-unknown-linux-gnu
-          - mips64-unknown-linux-gnuabi64
-          - powerpc-unknown-linux-gnu
-          - powerpc64-unknown-linux-gnu
-          - s390x-unknown-linux-gnu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -33,35 +22,19 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: ${{ matrix.target }}
           override: true
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y gcc
 
-      - name: Build project
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: Package .deb
-        run: |
-          cargo install cargo-deb
-          cargo deb --target ${{ matrix.target }}
-
-      - name: Package .rpm
-        run: |
-          cargo install cargo-rpm
-          cargo rpm build --target ${{ matrix.target }}
-
-      - name: Package .pkg
-        run: |
-          cargo install cargo-pkgbuild
-          cargo pkgbuild --target ${{ matrix.target }}
+      - name: Run build script
+        run: ./build.sh
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: my-rust-project-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/
+          name: release-binaries
+          path: release/
 
   release:
     needs: build
@@ -73,8 +46,8 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: my-rust-project-${{ matrix.target }}
-          path: ./artifacts
+          name: release-binaries
+          path: ./release
 
       - name: Create Release
         id: create_release
@@ -92,6 +65,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts
-          asset_name: my-rust-project-${{ matrix.target }}.tar.gz
-          asset_content_type: application/gzip
+          asset_path: ./release
+          asset_name: $(basename ${asset_path})
+          asset_content_type: application/octet-stream
