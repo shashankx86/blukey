@@ -2,6 +2,12 @@
 name = "blukey"
 version = "0.0.1"
 edition = "2021"
+authors = ["shashankx86 <shashankspis20@gmail.com>"]
+description = "A Linux daemon for creating custom keyboard shortcuts that can execute shell commands."
+readme = "README.md"
+repository = "https://github.com/rust-lang/cargo"
+homepage = "https://github.com/rust-lang/cargo"
+license = "MIT"
 
 [dependencies]
 evdev = "0.12"
