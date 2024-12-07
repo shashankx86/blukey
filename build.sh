@@ -3,7 +3,7 @@
 # Ensure cross is installed
 if ! command -v cross >/dev/null 2>&1; then
     echo "Cross is not installed. Installing..."
-    cargo install cross --version 0.2.5
+    cargo install cross 
 fi
 
 # List of targets to build (space-separated)
