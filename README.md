@@ -5,7 +5,7 @@ A CLI to set your custom key combo to perform custom key actions.
 ## Installation
 
 ```bash
-curl -s https://github.com/shashankx86/blukey/raw/main/install.sh | bash
+curl -s https://raw.githubusercontent.com/shashankx86/blukey/refs/heads/main/install.sh | bash
 ```
 
 Alternatively, install using Cargo:
