@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use std::process;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
@@ -38,8 +39,14 @@ pub fn load_config() -> Config {
         fs::write(&config_path, json).unwrap();
         return default_config;
     }
-    let contents = fs::read_to_string(config_path).unwrap();
-    serde_json::from_str(&contents).unwrap()
+    let contents = fs::read_to_string(&config_path).unwrap();
+    match serde_json::from_str(&contents) {
+        Ok(config) => config,
+        Err(e) => {
+            eprintln!("Invalid configuration file: {}", e);
+            process::exit(1);
+        }
+    }
 }
 
 pub fn save_config(config: &Config) {
