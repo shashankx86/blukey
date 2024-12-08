@@ -82,7 +82,7 @@ fn main() {
         }
         Some(Commands::ConfigPath) => println!("{}", get_config_path().display()),
         None => {
-            println!("blukey v0.0.1-rc0 - Keyboard shortcut daemon\n");
+            println!("blukey v0.0.2-rc0 - Keyboard shortcut daemon\n");
             println!("Usage:");
             println!("  blukey <COMMAND>\n");
             println!("Commands:");
