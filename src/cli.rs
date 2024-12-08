@@ -7,7 +7,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(author, version = "0.0.1-rc0", about, long_about = None)]
+#[command(author = "shashankx86", version = "0.0.2-rc0", about, long_about = None)]
 #[command(name = "blukey")]
 pub struct Cli {
     #[command(subcommand)]
