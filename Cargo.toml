@@ -1,12 +1,12 @@
 [package]
 name = "blukey"
-version = "0.0.1"
+version = "0.0.2-rc0"
 edition = "2021"
 authors = ["shashankx86 <shashankspis20@gmail.com>"]
 description = "A Linux daemon for creating custom keyboard shortcuts that can execute shell commands."
 readme = "README.md"
-repository = "https://github.com/rust-lang/cargo"
-homepage = "https://github.com/rust-lang/cargo"
+repository = "https://github.com/shashankx86/blukey"
+homepage = "https://github.com/shashankx86/blukey"
 license = "MIT"
 
 [dependencies]
