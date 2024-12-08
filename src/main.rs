@@ -17,17 +17,21 @@ use crate::cli::{Cli, Commands, KeyCommands};
 use crate::config::{get_config_path, load_config};
 use crate::keyboard::{monitor_keyboard, register_new_key};
 
+fn ensure_root_access(operation: &str) {
+    if !geteuid().is_root() {
+        eprintln!("Root privileges required for {}", operation);
+        process::exit(1);
+    }
+}
+
 fn main() {
     let config = load_config();
     let cli = Cli::parse();
 
     match cli.command {
         Some(Commands::Start) => {
-            if !geteuid().is_root() {
-                eprintln!("Root privileges required");
-                process::exit(1);
-            }
-
+            ensure_root_access("starting keyboard monitor");
+            
             if config.demon {
                 println!("Starting daemon...");
                 if let Err(e) = daemon::start_daemon() {
@@ -41,6 +45,7 @@ fn main() {
             }
         }
         Some(Commands::Stop) => {
+            ensure_root_access("stopping daemon");
             if let Ok(pid) = std::fs::read_to_string("/tmp/blukey.pid") {
                 Command::new("kill")
                     .arg(pid.trim())
@@ -53,7 +58,10 @@ fn main() {
         }
         Some(Commands::Key(key_cmd)) => {
             match key_cmd {
-                KeyCommands::New => register_new_key(),
+                KeyCommands::New => {
+                    ensure_root_access("registering new key combination");
+                    register_new_key();
+                },
                 KeyCommands::List => {
                     if config.keys.is_empty() {
                         println!("No key combinations registered");
