@@ -6,7 +6,7 @@
 
 use evdev::{Device, Key};
 use std::fs;
-use std::io::{self, Write};
+use std::io::{self};
 use std::process::{self, Command};
 use crate::config::{Config, load_config, save_config};
 
@@ -30,6 +30,12 @@ pub fn register_new_key() {
     let mut keys_pressed = Vec::new();
     let mut device = find_keyboard_device().expect("No keyboard found");
     
+    // Set up raw mode for key capture
+    let mut termios = termios::Termios::from_fd(0).unwrap();
+    let original = termios.clone();
+    termios.c_lflag &= !(termios::ICANON | termios::ECHO);
+    termios::tcsetattr(0, termios::TCSANOW, &termios).unwrap();
+
     loop {
         if let Ok(events) = device.fetch_events() {
             for event in events {
@@ -45,16 +51,33 @@ pub fn register_new_key() {
                         0 => {
                             if !keys_pressed.is_empty() {
                                 let combo = keys_pressed.join("+");
-                                println!("\nEnter command to execute for '{}': ", combo);
-                                let mut command = String::new();
-                                io::stdout().flush().unwrap();
-                                io::stdin().read_line(&mut command).unwrap();
                                 
-                                let mut config = load_config();
-                                config.keys.insert(combo, command.trim().to_string());
-                                save_config(&config);
-                                println!("Key combination registered!");
-                                return;
+                                // Restore normal terminal mode
+                                termios::tcsetattr(0, termios::TCSANOW, &original).unwrap();
+                                
+                                // Clear any pending input
+                                io::stdin().read_line(&mut String::new()).unwrap();
+                                
+                                println!("\nEnter command to execute for '{}': ", combo);
+                                
+                                // Read command in normal mode
+                                let mut command = String::new();
+                                match io::stdin().read_line(&mut command) {
+                                    Ok(_) => {
+                                        let command = command.trim().to_string();
+                                        if !command.is_empty() {
+                                            let mut config = load_config();
+                                            config.keys.insert(combo, command);
+                                            save_config(&config);
+                                            println!("Key combination registered!");
+                                        }
+                                        return;
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Error reading command: {}", e);
+                                        return;
+                                    }
+                                }
                             }
                         }
                         _ => {}
