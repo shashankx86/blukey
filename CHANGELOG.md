@@ -17,3 +17,19 @@
 - JSON configuration file support
 - Root privilege handling
 - Cross-platform Linux builds
+
+## [0.0.2-rc0] 
+
+### Features
+- Added SUDOLOCK configuration option for safer command execution
+- Improved keyboard device detection with better error handling
+
+### Improvements
+- Better terminal handling during key registration
+- More detailed error messages for command execution
+- Structured CLI interface 
+
+### Bug Fixes
+- Fixed privilege escalation issues with command execution
+- Improved error handling for config file operations
+- Better cleanup when stopping daemon
