@@ -1,6 +1,6 @@
 # Blukey
 
-A Linux daemon for creating custom keyboard shortcuts that can execute shell commands.
+A CLI to set your custom key combo to perform custom key actions.
 
 ## Installation
 ```bash
