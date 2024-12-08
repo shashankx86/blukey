@@ -129,10 +129,42 @@ pub fn monitor_keyboard(config: Config) {
     }
 }
 
+// keyboard.rs - Update execute_command function
 fn execute_command(command: &str) {
-    Command::new("sh")
-        .arg("-c")
-        .arg(command)
-        .spawn()
-        .unwrap();
+    let config = load_config();
+    
+    if config.sudolock {
+        // Execute as normal user
+        if let Ok(sudo_user) = std::env::var("SUDO_USER") {
+            Command::new("su")
+                .arg(&sudo_user)
+                .arg("-c")
+                .arg(command)
+                .spawn()
+                .unwrap_or_else(|e| {
+                    eprintln!("Failed to execute command: {}", e);
+                    process::exit(1);
+                });
+        } else {
+            // Fallback if SUDO_USER is not set
+            Command::new("sh")
+                .arg("-c")
+                .arg(command)
+                .spawn()
+                .unwrap_or_else(|e| {
+                    eprintln!("Failed to execute command: {}", e);
+                    process::exit(1);
+                });
+        }
+    } else {
+        // Execute with sudo privileges
+        Command::new("sh")
+            .arg("-c")
+            .arg(command)
+            .spawn()
+            .unwrap_or_else(|e| {
+                eprintln!("Failed to execute command: {}", e);
+                process::exit(1);
+            });
+    }
 }

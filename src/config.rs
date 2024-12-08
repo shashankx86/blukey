@@ -15,6 +15,8 @@ use std::process;
 pub struct Config {
     #[serde(rename = "DEMON")]
     pub demon: bool,
+    #[serde(rename = "SUDOLOCK")]
+    pub sudolock: bool,
     #[serde(rename = "KEYS")]
     pub keys: HashMap<String, String>,
 }
@@ -33,6 +35,7 @@ pub fn load_config() -> Config {
     if !config_path.exists() {
         let default_config = Config {
             demon: true,
+            sudolock: true, // Default to true for safety
             keys: HashMap::new(),
         };
         let json = serde_json::to_string_pretty(&default_config).unwrap();
