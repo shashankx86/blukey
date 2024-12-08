@@ -32,7 +32,7 @@ pub fn load_config() -> Config {
     let config_path = get_config_path();
     if !config_path.exists() {
         let default_config = Config {
-            demon: false,
+            demon: true,
             keys: HashMap::new(),
         };
         let json = serde_json::to_string_pretty(&default_config).unwrap();
